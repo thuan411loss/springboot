@@ -67,6 +67,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+    @ApiMessage("fetch user by id")
     public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") Long id) throws IdinvaliadException {
         User ericUser = this.userService.fetchUserById(id);
         if (ericUser == null) {

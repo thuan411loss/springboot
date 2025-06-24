@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
 
-import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Job;
 import vn.hoidanit.jobhunter.domain.Skill;
 import vn.hoidanit.jobhunter.domain.job.ResCreateJobDTO;
@@ -17,6 +17,7 @@ import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.SkillRepository;
 
+@Service
 public class JobService {
 
     private final SkillRepository skillRepository;
@@ -68,11 +69,11 @@ public class JobService {
     public ResUpdateJobDTO update(Job job) {
         // check skills
         if (job.getSkills() != null) {
-            List<Long> rqeSkills = job.getSkills()
+            List<Long> reqSkills = job.getSkills()
                     .stream().map(x -> x.getId())
                     .collect(Collectors.toList());
 
-            List<Skill> dbSkills = this.skillRepository.findByIdIn(rqeSkills);
+            List<Skill> dbSkills = this.skillRepository.findByIdIn(reqSkills);
             job.setSkills(dbSkills);
         }
         // update job
@@ -105,22 +106,21 @@ public class JobService {
         this.jobRepository.deleteById(id);
     }
 
-    // public ResultPaginationDTO fetchAll(Specification<Skill> spec, Pageable
-    // pageable) {
-    // Page<Job> pageUser = this.jobRepository.findAll(spec, pageable);
-    // ResultPaginationDTO rs = new ResultPaginationDTO();
-    // ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
-    // mt.setPage(pageable.getPageNumber() + 1);
-    // mt.setPageSize(pageable.getPageSize());
+    public ResultPaginationDTO fetchAll(Specification<Job> spec, Pageable pageable) {
+        Page<Job> pageUser = this.jobRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
 
-    // mt.setPages(pageUser.getTotalPages());
-    // mt.setTotal(pageUser.getTotalElements());
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
 
-    // rs.setMeta(mt);
+        rs.setMeta(mt);
 
-    // rs.setResult(pageUser.getContent());
-    // return rs;
-    // }
+        rs.setResult(pageUser.getContent());
+        return rs;
+    }
 
     public Optional<Job> fetchJobById(long id) {
 

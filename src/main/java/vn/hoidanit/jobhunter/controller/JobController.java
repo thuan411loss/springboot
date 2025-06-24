@@ -42,19 +42,19 @@ public class JobController {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.jobService.create(job));
     }
 
-    // @PutMapping("/jobs")
-    // @ApiMessage("Update a job")
-    // public ResponseEntity<ResUpdateJobDTO> update(@Valid @RequestBody Job job) {
-    // Optional<Job> currentJob = this.jobService.fetchJobById(job.getId());
-    // if (!currentJob.isPresent()) {
-    // throw new IdinvaliadException("Job not found");
-    // }
-    // return ResponseEntity.ok().body(this.jobService.update(job));
-    // }
+    @PutMapping("/jobs")
+    @ApiMessage("Update a job")
+    public ResponseEntity<ResUpdateJobDTO> update(@Valid @RequestBody Job job) throws IdinvaliadException {
+        Optional<Job> currentJob = this.jobService.fetchJobById(job.getId());
+        if (!currentJob.isPresent()) {
+            throw new IdinvaliadException("Job not found");
+        }
+        return ResponseEntity.ok().body(this.jobService.update(job));
+    }
 
     @DeleteMapping("jobs/{id}")
-    @ApiMessage("Delete a skill")
-    public ResponseEntity<Void> deleteSkill(@PathVariable("id") long id) throws IdinvaliadException {
+    @ApiMessage("Delete a job")
+    public ResponseEntity<Void> deleteJob(@PathVariable("id") long id) throws IdinvaliadException {
         Optional<Job> currentJob = this.jobService.fetchJobById(id);
         if (!currentJob.isPresent()) {
             throw new IdinvaliadException("Job not found");
@@ -63,17 +63,17 @@ public class JobController {
         return ResponseEntity.ok().body(null);
     }
 
-    // @GetMapping("/jobs")
-    // @ApiMessage("Get job with pagination")
-    // public ResponseEntity<ResultPaginationDTO> getAllJob(
-    // @Filter Specification<Job> spec,
-    // Pageable pageable) {
-    // return ResponseEntity.ok().body(this.jobService.fetchAll(spec, pageable));
-    // }
-
     @GetMapping("/jobs")
-    @ApiMessage("Get job with pagination")
-    public ResponseEntity<Job> getJob(
+    @ApiMessage("Get jobs with pagination")
+    public ResponseEntity<ResultPaginationDTO> getAllJobs(
+            @Filter Specification<Job> spec,
+            Pageable pageable) {
+        return ResponseEntity.ok().body(this.jobService.fetchAll(spec, pageable));
+    }
+
+    @GetMapping("/jobs/{id}")
+    @ApiMessage("Get job by id")
+    public ResponseEntity<Job> getJobById(
             @PathVariable("id") long id) throws IdinvaliadException {
 
         Optional<Job> currentJob = this.jobService.fetchJobById(id);
